@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест КОД 95</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: Arial, sans-serif; background:#0f1117; color:#e8eaf0; min-height:100vh; }
+
+header {
+  background:#1a1d27; border-bottom:3px solid #f5a623;
+  padding:16px 24px; display:flex; align-items:center; justify-content:space-between;
+}
+.logo { font-size:22px; font-weight:700; color:#f5a623; letter-spacing:2px; }
+.logo small { display:block; font-size:12px; color:#8a90a8; font-weight:400; }
+
+main { max-width:820px; margin:0 auto; padding:30px 20px 60px; }
+
+/* SCREENS */
+.screen { display:none; }
+.screen.active { display:block; }
+
+/* MODE SCREEN */
+.mode-hero { text-align:center; padding:40px 0 30px; }
+.mode-hero h1 { font-size:38px; color:#f5a623; letter-spacing:3px; margin-bottom:8px; }
+.mode-hero p { color:#8a90a8; font-size:15px; }
+.mode-cards { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; margin-top:30px; }
+.mode-card {
+  background:#1a1d27; border:2px solid #2e3350; border-radius:14px;
+  padding:28px 24px; width:240px; cursor:pointer; transition:all 0.2s; text-align:center;
+}
+.mode-card:hover { border-color:#f5a623; transform:translateY(-3px); }
+.mode-card .icon { font-size:40px; margin-bottom:12px; }
+.mode-card h3 { color:#f5a623; font-size:18px; margin-bottom:8px; }
+.mode-card p { color:#8a90a8; font-size:13px; line-height:1.5; }
+
+/* BLOCK SCREEN */
+.screen-title { font-size:24px; font-weight:700; color:#f5a623; margin-bottom:6px; }
+.screen-sub { color:#8a90a8; font-size:14px; margin-bottom:24px; }
+.blocks-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; }
+.block-btn {
+  background:#1a1d27; border:2px solid #2e3350; border-radius:10px;
+  padding:18px 14px; cursor:pointer; text-align:center; color:#e8eaf0;
+  transition:all 0.2s;
+}
+.block-btn:hover { border-color:#f5a623; background:#22263a; }
+.block-btn .bnum { display:block; font-size:30px; font-weight:700; color:#f5a623; }
+.block-btn .bname { font-size:12px; color:#8a90a8; margin-top:4px; line-height:1.4; }
+
+/* QUIZ SCREEN */
+.quiz-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+.badge { background:#22263a; border:1px solid #2e3350; border-radius:6px; padding:5px 12px; font-size:12px; color:#8a90a8; }
+.progress-wrap { height:6px; background:#22263a; border-radius:3px; margin-bottom:24px; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#e8521a,#f5a623); border-radius:3px; transition:width 0.3s; }
+
+.q-card { background:#1a1d27; border:1px solid #2e3350; border-radius:14px; padding:28px; margin-bottom:18px; }
+.q-num { font-size:12px; color:#8a90a8; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+.q-text { font-size:17px; font-weight:500; line-height:1.6; }
+
+.answers { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+.ans-btn {
+  background:#22263a; border:2px solid #2e3350; border-radius:10px;
+  padding:13px 16px; cursor:pointer; text-align:left; color:#e8eaf0;
+  font-family:Arial,sans-serif; font-size:14px; line-height:1.4;
+  display:flex; align-items:flex-start; gap:10px; transition:all 0.2s;
+}
+.ans-btn:hover:not(:disabled) { border-color:#f5a623; background:rgba(245,166,35,0.06); }
+.ans-btn .letter { font-weight:700; color:#f5a623; min-width:20px; }
+.ans-btn.correct { border-color:#27ae60 !important; background:rgba(39,174,96,0.12) !important; }
+.ans-btn.correct .letter { color:#27ae60; }
+.ans-btn.wrong { border-color:#e74c3c !important; background:rgba(231,76,60,0.12) !important; }
+.ans-btn.wrong .letter { color:#e74c3c; }
+.ans-btn:disabled { cursor:default; }
+
+.feedback { margin-top:14px; padding:12px 16px; border-radius:8px; font-size:14px; font-weight:500; display:none; }
+.feedback.show { display:flex; align-items:flex-start; gap:8px; }
+.feedback.ok { background:rgba(39,174,96,0.12); border:1px solid rgba(39,174,96,0.3); color:#2ecc71; }
+.feedback.err { background:rgba(231,76,60,0.12); border:1px solid rgba(231,76,60,0.3); color:#e74c3c; }
+
+.nav { display:flex; justify-content:space-between; align-items:center; margin-top:16px; gap:12px; }
+.err-info { display:flex; gap:12px; flex-wrap:wrap; }
+.err-badge { background:#22263a; border:1px solid #2e3350; border-radius:6px; padding:5px 12px; font-size:13px; color:#8a90a8; }
+.err-badge b { color:#e74c3c; font-size:16px; }
+
+/* BUTTONS */
+.btn-primary {
+  background:linear-gradient(135deg,#e8521a,#f5a623); border:none; border-radius:8px;
+  color:#0f1117; font-weight:700; font-size:14px; padding:11px 24px;
+  cursor:pointer; transition:all 0.2s; letter-spacing:1px;
+}
+.btn-primary:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 5px 15px rgba(245,166,35,0.3); }
+.btn-primary:disabled { opacity:0.4; cursor:default; transform:none; box-shadow:none; }
+.btn-ghost {
+  background:none; border:1px solid #2e3350; border-radius:8px; color:#8a90a8;
+  font-size:13px; font-weight:700; padding:11px 20px; cursor:pointer; transition:all 0.2s;
+}
+.btn-ghost:hover { border-color:#8a90a8; color:#e8eaf0; }
+
+/* RESULT SCREEN */
+.result-center { text-align:center; padding:30px 0; }
+.result-icon { font-size:68px; margin-bottom:16px; }
+.result-title { font-size:44px; font-weight:700; letter-spacing:3px; margin-bottom:8px; }
+.result-title.pass { color:#27ae60; }
+.result-title.fail { color:#e74c3c; }
+.result-sub { color:#8a90a8; font-size:16px; margin-bottom:28px; }
+.result-stats { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:32px; }
+.rstat { background:#1a1d27; border:1px solid #2e3350; border-radius:10px; padding:16px 24px; min-width:110px; text-align:center; }
+.rstat .rnum { display:block; font-size:32px; font-weight:700; color:#f5a623; }
+.rstat .rlbl { font-size:11px; color:#8a90a8; text-transform:uppercase; letter-spacing:1px; }
+
+.errors-review { text-align:left; margin-top:30px; }
+.errors-review h3 { font-size:16px; font-weight:700; color:#f5a623; text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; }
+.err-item { background:#1a1d27; border:1px solid #2e3350; border-left:3px solid #e74c3c; border-radius:8px; padding:14px 16px; margin-bottom:10px; }
+.err-item .eq { font-size:14px; margin-bottom:8px; line-height:1.4; }
+.err-item .your { font-size:13px; color:#e74c3c; margin-bottom:3px; }
+.err-item .right { font-size:13px; color:#27ae60; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">КОД 95 <small>Система тестирования</small></div>
+  <div id="hStats" style="display:none;gap:14px">
+    <div class="badge" id="hQ">Вопрос 1/1</div>
+    <div class="badge" id="hErr" style="color:#e74c3c">Ошибок: 0</div>
+  </div>
+</header>
+
+<main>
+
+<div id="screenMode" class="screen active">
+  <div class="mode-hero">
+    <h1>КОД 95</h1>
+    <p>Тема 1.1 — Характеристики трансмиссии</p>
+  </div>
+  <div class="mode-cards">
+    <div class="mode-card" onclick="startMode('block')">
+      <div class="icon">📚</div>
+      <h3>Блочный режим</h3>
+      <p>Вопросы по блокам. Мгновенная подсветка ответа.</p>
+    </div>
+    <div class="mode-card" onclick="startMode('final')">
+      <div class="icon">🎯</div>
+      <h3>Финальный тест</h3>
+      <p>30 вопросов. Лимит: 4 ошибки (осн.) + 5 ошибок (спец.).</p>
+    </div>
+  </div>
+</div>
+
+<div id="screenBlocks" class="screen">
+  <button class="btn-ghost" onclick="go('screenMode')" style="margin-bottom:20px">← Назад</button>
+  <div class="screen-title">Выбор блока</div>
+  <div class="screen-sub">Выберите блок для тренировки</div>
+  <div class="blocks-grid" id="blocksGrid"></div>
+</div>
+
+<div id="screenQuiz" class="screen">
+  <div class="quiz-top">
+    <button class="btn-ghost" onclick="exitQuiz()">← Выход</button>
+    <div class="badge" id="modeBadge">Режим</div>
+    <div class="err-info" id="finalErrInfo" style="display:none">
+      <div class="err-badge">Осн.: <b id="eMain">0</b>/4</div>
+      <div class="err-badge">Спец.: <b id="eSpec">0</b>/5</div>
+    </div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="q-card">
+    <div class="q-num" id="qNum"></div>
+    <div class="q-text" id="qText"></div>
+    <div class="answers" id="answersList"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+  <div class="nav">
+    <button class="btn-ghost" id="prevBtn" onclick="prevQ()">← Назад</button>
+    <button class="btn-primary" id="nextBtn" onclick="nextQ()">Далее →</button>
+  </div>
+</div>
+
+<div id="screenResult" class="screen">
+  <div class="result-center">
+    <div class="result-icon" id="rIcon"></div>
+    <div class="result-title" id="rTitle"></div>
+    <div class="result-sub" id="rSub"></div>
+    <div class="result-stats" id="rStats"></div>
+    <button class="btn-primary" onclick="go('screenMode')">Начать заново</button>
+  </div>
+  <div class="errors-review" id="errorsReview"></div>
+</div>
+
+</main>
+
+<script>
+var QUESTIONS = [
+  {b:1,q:"При каких условиях движения важна максимальная мощность двигателя?",a:["При подъеме на возвышенность","При движении с постоянной скоростью","При спуске с возвышенности"],c:0},
+  {b:1,q:"Какое количество оборотов в минуту следует поддерживать при движении с постоянной скоростью?",a:["1000-1200 об/мин","1300-1700 об/мин","В соответствии с инструкцией по эксплуатации"],c:2},
+  {b:1,q:"Когда водитель должен понизить передачу?",a:["Когда количество оборотов достигнет значения максимальной мощности","При каждом изменении скорости","В условиях, которые следуют из характеристик дорожного движения"],c:2},
+  {b:1,q:"При каких условиях транспортное средство экономично расходует топливо?",a:["В соответствии с инструкцией по эксплуатации","При количестве оборотов максимальной мощности","При каждом изменении конфигурации дороги"],c:0},
+  {b:1,q:"О чем сообщает характеристика крутящего момента?",a:["Об оптимальном диапазоне оборотов для минимального расхода топлива","О диапазоне полезных оборотов двигателя","О максимальной скорости транспортного средства"],c:1},
+  {b:2,q:"С чем может быть связан чрезмерный расход топлива?",a:["С неправильной техникой вождения","С использованием ретардера на спусках","С блокировкой дифференциала"],c:0},
+  {b:2,q:"Что обязан делать водитель чтобы ограничить негативное воздействие на окружающую среду?",a:["Ездить на низкой скорости","Отключать двигатель на спусках","Соблюдать инструкции по эксплуатации"],c:2},
+  {b:2,q:"Влияет ли большая загрузка на расход топлива?",a:["Нет","Приводит к снижению расхода топлива","Увеличивает расход топлива"],c:2},
+  {b:2,q:"Влияет ли резкое торможение на расход топлива?",a:["Может вызвать увеличение расхода топлива","Нет","Снижает расход топлива"],c:0},
+  {b:2,q:"Влияет ли использование аэродинамических экранов на расход топлива?",a:["Да, приводит к снижению расхода топлива","Да, увеличивает расход топлива","Не влияет"],c:0},
+  {b:3,q:"Как используется тахометр?",a:["Чтобы слушать звук двигателя","Чтобы сравнивать показания приборов","Чтобы наблюдать за показателями без снижения безопасности"],c:2},
+  {b:3,q:"Тахометр используется для:",a:["Измерения влажности воздуха","Измерения температуры кабины","Измерения количества оборотов двигателя"],c:2},
+  {b:3,q:"Что означает зелёная зона на тахометре?",a:["Диапазон работы двигательного тормоза","Диапазон оптимальной мощности двигателя","Диапазон оборотов для ускорения"],c:1},
+  {b:3,q:"Наиболее экономичное вождение — стрелка тахометра в диапазоне:",a:["Красном","Зеленом","Перед зеленым полем"],c:1},
+  {b:3,q:"О чем информирует зеленое поле на тахометре?",a:["Стрелка должна быть здесь при равномерной езде","Стрелка не должна выходить за эту область при разгоне","Об оптимальном диапазоне работы привода при разгоне"],c:2},
+  {b:4,q:"Когда должна происходить смена передачи?",a:["Когда двигатель достигает максимального количества оборотов","Движения со второй передачи","В момент переключения с максимально возможным количеством оборотов"],c:0},
+  {b:4,q:"Когда должно происходить переключение на более высокую передачу?",a:["Не позднее чем при достижении 1400 об/мин","В зависимости от характеристик крутящего момента","При каждом изменении конфигурации дороги"],c:1},
+  {b:4,q:"На какой передаче должен происходить подъем на возвышенность?",a:["Передача соответствующая крутящему моменту","Лучше всего на второй передаче","Только на первой передаче"],c:0},
+  {b:4,q:"Какую передачу использовать при равномерном движении?",a:["Низкую","Высокую","Подстроенную под скорость и условия дороги"],c:2},
+  {b:4,q:"Что учитывать при включении более высокой передачи?",a:["Свои вкусы и опыт вождения","Прежде всего тип дороги","Характеристики крутящего момента двигателя"],c:2},
+  {b:5,q:"Влияет ли большая загрузка на способность к ускорению?",a:["Повышает способность к ускорению","Уменьшает возможность ускорения","Не влияет"],c:1},
+  {b:5,q:"Может ли большая загрузка влиять на длину тормозного пути?",a:["Не влияет если тормозная система работает правильно","Может привести к увеличению тормозного пути","Уменьшает тормозной путь"],c:1},
+  {b:5,q:"Что рекомендуется для устойчивости грузовых автомобилей?",a:["Равномерное размещение груза","Размещение груза в задней части","Вид груза не влияет на устойчивость"],c:0},
+  {b:5,q:"Влияние смещения центра тяжести вверх на устойчивость:",a:["Уменьшает устойчивость","Повышает устойчивость","Не влияет"],c:0},
+  {b:5,q:"Может ли тяжелый груз повлиять на тормозной путь?",a:["Нет эффекта если тормозная система исправна","Может привести к увеличению тормозного пути","Нет — система останавливает на одинаковом расстоянии"],c:1},
+  {b:6,q:"Можно ли достичь EURO 5 без раствора AdBlue?",a:["Да с помощью системы рециркуляции","Нет требуется раствор AdBlue","Нет стандарт EURO 5 не существует"],c:1},
+  {b:6,q:"Что такое раствор AdBlue?",a:["Средство для снижения вредных частиц в выбросах дизельных двигателей SCR","Средство для снижения расхода топлива","Добавка для зимних жидкостей"],c:0},
+  {b:6,q:"Последствия если не использовать AdBlue?",a:["Это не имеет значения","Увеличит количество оксидов азота в выхлопных газах на 30-70%","Может привести к износу двигателя"],c:1},
+  {b:6,q:"В каком месте впрыскивается жидкость AdBlue?",a:["Перед катализатором SCR","За катализатором SCR","В катализатор SCR или фильтр DPF"],c:0},
+  {b:6,q:"Какая неисправность при движении без AdBlue?",a:["Неисправность катализатора SCR","Неисправность топливной системы","Снижение мощности двигателя"],c:0},
+  {b:7,q:"Какие тормоза называются тормозами непрерывного действия?",a:["Основные тормоза (рабочие)","Вспомогательные тормоза (аварийные)","Альтернативные тормоза (замедлители)"],c:2},
+  {b:7,q:"Каким механизмом является замедлитель (ретардер)?",a:["Временного действия","Непрерывного действия","Стояночным"],c:1},
+  {b:7,q:"К какой группе относится главная тормозная система?",a:["Непрерывного действия","Временного действия","Альтернативной"],c:1},
+  {b:7,q:"Торможение двигателем заключается в:",a:["Переходе на самую низкую передачу и отпущении сцепления","Включении задней передачи","Постепенном снижении передач с одновременным снятием ноги с акселератора"],c:2},
+  {b:7,q:"Что означает понятие «фединг»?",a:["Параметр определяющий способность к ускорению","Понятие пневмоавтоматики","Потеря способности торможения из-за высокой температуры элементов тормозной системы"],c:2},
+  {b:8,q:"К чему приводит турбокомпрессор с изменяемой геометрией?",a:["Устраняет явление «турбоямы»","Только к увеличению мощности","Только к уменьшению расхода топлива"],c:0},
+  {b:8,q:"Ведущая ось состоит из двух элементов:",a:["Двигатель и сцепление","Дифференциал и коробка передач","Основная передача и дифференциал"],c:2},
+  {b:8,q:"Система передачи (трансмиссия) предназначена для:",a:["Усиления двигателя","Уменьшения сгорания топлива","Передачи крутящего момента на ведомые колеса"],c:2},
+  {b:8,q:"Двигатель работает наиболее эффективно при:",a:["Высоких оборотах","Между максимальным крутящим моментом и максимальной мощностью","При отсутствии питания в системе впрыска"],c:1},
+  {b:8,q:"Как называется способность двигателя настраивать обороты по отношению к нагрузке?",a:["Гибкость","Удельная скорость","Фединг"],c:0},
+  {b:9,q:"Влияет ли резкое торможение на безопасность?",a:["Да может угрожать безопасности","Нет водитель тормозит только в случае опасности","Никак не влияет"],c:0},
+  {b:9,q:"Влияние резкого ускорения на безопасность:",a:["Никак не влияет","Повышает риски безопасности","Снижает риски безопасности"],c:1},
+  {b:9,q:"К чему водитель должен приспособить передачу?",a:["К скорости движения","Только к условиям движения","Прежде всего к ситуации на дороге"],c:2},
+  {b:9,q:"Наиболее эффективное ускорение достигается когда:",a:["Двигатель достигает максимального количества оборотов","Движения со второй передачи","Переключение с максимально возможным количеством оборотов"],c:0},
+  {b:9,q:"Лучше раннее или позднее переключение на высшую передачу?",a:["Более позднее","Очень раннее","Не влияет на безопасность"],c:0},
+  {b:10,q:"Влияние низкого давления в шинах на безопасность:",a:["Небольшое","Никакого","Значительное"],c:2},
+  {b:10,q:"Влияет ли низкое давление в шинах на расход топлива?",a:["Да — снижает расход топлива","Да — увеличивает расход топлива","Не влияет"],c:1},
+  {b:10,q:"Что влияет на сопротивление качению автомобиля?",a:["Рисунок протектора шины","Значение крутящего момента","Мощность двигателя"],c:0},
+  {b:10,q:"От чего зависит сопротивление качению?",a:["От мощности двигателя","От рисунка протектора покрышки","От величины крутящего момента"],c:1},
+  {b:10,q:"Влияние резкого ускорения на безопасность вождения:",a:["Незначительно если есть система ASR/TCS","Большое если происходит на скользкой поверхности","Никакого"],c:1},
+  {b:11,q:"Что делать при аварии главной тормозной системы?",a:["Попытаться исправить на дороге и продолжить движение","Сообщить предпринимателю и вызвать специализированный сервис или эвакуатор","Вернуться на базу и сообщить диспетчеру"],c:1},
+  {b:11,q:"О чём свидетельствует снижение давления воздуха в тормозной системе?",a:["О чрезмерном износе тормозных накладок","Об аварии компрессора или нарушении герметичности системы","О слишком низких оборотах двигателя"],c:1},
+  {b:11,q:"Проверка уровня масла в двигателе производится с помощью:",a:["Датчика уровня масла","Датчика давления масла","Уровня дизельного топлива"],c:0},
+  {b:11,q:"Влияние исправности двигателя на расход топлива:",a:["Исправный двигатель потребляет меньше топлива","Исправный двигатель потребляет больше топлива","Состояние двигателя не влияет на расход"],c:0},
+  {b:11,q:"О чём свидетельствует снижение давления воздуха во время торможения?",a:["О частом использовании рабочего или альтернативного тормоза","О нарушении герметичности тормозной системы","О слишком низких оборотах двигателя"],c:1},
+  {b:12,q:"Система ESP на грузовике это система:",a:["Контроля тяги","Электронной синхронизации тормозной системы","Стабилизации пути автомобиля"],c:2},
+  {b:12,q:"Датчики ABS используются для:",a:["Проверки блокировки колеса при торможении","Измерения температуры тормозного диска","Измерения толщины тормозных колодок"],c:0},
+  {b:12,q:"Пневматическая тормозная система с электронным управлением:",a:["Всегда предотвращает занос","Контролирует устойчивость состава при торможении","Предотвращает занос кроме скользких поверхностей"],c:1},
+  {b:12,q:"Чем является система курсовой устойчивости ESP?",a:["Системой устойчивости траектории автомобиля","Системой контроля тяги","Системой синхронизации тормозной системы"],c:0},
+  {b:12,q:"Всегда ли электронная тормозная система предотвращает занос?",a:["Нет за это отвечает крутящий момент","Да","Нет за это отвечает эластичность двигателя"],c:1},
+  {b:13,q:"Показания тахометра при экономичном движении с дизельным двигателем:",a:["1700-2200 об/мин","1000-1500 об/мин","2500-3000 об/мин"],c:1},
+  {b:13,q:"Что такое декомпрессионный тормоз?",a:["Тип главного пневматического тормоза","Двигательный тормоз","Тип гидродинамического ретардера"],c:1},
+  {b:13,q:"Разница между тормозом-замедлителем и ретардером:",a:["Замедлитель в автобусах ретардер в грузовиках","Нет разницы — это разные названия одного устройства","Замедлитель в горах ретардер на равнинах"],c:1},
+  {b:13,q:"При каких оборотах оптимальная работа двигательного тормоза?",a:["При низких","При средних","При высоких"],c:2},
+  {b:13,q:"Для работы гидродинамического замедлителя используется явление вихревых токов?",a:["Нет явление вихревых токов не используется","Да в замедлителях с общим масляным контуром с КПП","Да в замедлителях с собственной циркуляцией масла"],c:0}
+];
+
+var BLOCK_NAMES = {
+  1:"Мощность и момент", 2:"Расход топлива", 3:"Тахометр",
+  4:"Переключение передач", 5:"Нагрузка и устойчивость", 6:"AdBlue и экология",
+  7:"Тормозная система", 8:"Турбо и трансмиссия", 9:"Безопасность вождения",
+  10:"Шины", 11:"Неисправности", 12:"ESP и ABS", 13:"Специальные вопросы"
+};
+
+// Group by block
+var BLOCKS = {};
+for (var i = 0; i < QUESTIONS.length; i++) {
+  var bq = QUESTIONS[i];
+  if (!BLOCKS[bq.b]) BLOCKS[bq.b] = [];
+  BLOCKS[bq.b].push(bq);
+}
+
+// State
+var currentMode = '';
+var currentQuestions = [];
+var currentIndex = 0;
+var userAnswers = [];
+var errMain = 0;
+var errSpec = 0;
+
+function go(screenId) {
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) {
+    screens[i].classList.remove('active');
+  }
+  document.getElementById(screenId).classList.add('active');
+  var hStats = document.getElementById('hStats');
+  hStats.style.display = (screenId === 'screenQuiz') ? 'flex' : 'none';
+}
+
+function startMode(mode) {
+  if (mode === 'block') {
+    currentMode = 'block';
+    buildBlocksGrid();
+    go('screenBlocks');
+  } else {
+    currentMode = 'final';
+    startFinalTest();
+  }
+}
+
+function buildBlocksGrid() {
+  var grid = document.getElementById('blocksGrid');
+  grid.innerHTML = '';
+  var keys = Object.keys(BLOCKS);
+  for (var i = 0; i < keys.length; i++) {
+    var b = keys[i];
+    var btn = document.createElement('div');
+    btn.className = 'block-btn';
+    btn.innerHTML = '<span class="bnum">' + b + '</span><span class="bname">' + BLOCK_NAMES[b] + '<br><small style="font-size:11px;color:#8a90a8">' + BLOCKS[b].length + ' вопросов</small></span>';
+    (function(blockNum) {
+      btn.onclick = function() { startBlock(blockNum); };
+    })(parseInt(b));
+    grid.appendChild(btn);
+  }
+}
+
+function startBlock(blockNum) {
+  currentMode = 'block';
+  currentQuestions = BLOCKS[blockNum].slice();
+  currentIndex = 0;
+  userAnswers = [];
+  for (var i = 0; i < currentQuestions.length; i++) userAnswers.push(null);
+  document.getElementById('modeBadge').textContent = 'Блок ' + blockNum + ' — ' + BLOCK_NAMES[blockNum];
+  document.getElementById('finalErrInfo').style.display = 'none';
+  go('screenQuiz');
+  renderQ();
+}
+
+function shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+
+function startFinalTest() {
+  var mainQs = [];
+  var keys = Object.keys(BLOCKS);
+  for (var i = 0; i < keys.length; i++) {
+    var b = parseInt(keys[i]);
+    if (b < 13) {
+      var qs = BLOCKS[b].slice();
+      shuffle(qs);
+      mainQs.push(qs[0]);
+    }
+  }
+  shuffle(mainQs);
+  mainQs = mainQs.slice(0, 20);
+
+  var specQs = BLOCKS[13].slice();
+  shuffle(specQs);
+  specQs = specQs.slice(0, 10);
+
+  currentQuestions = mainQs.concat(specQs);
+  currentIndex = 0;
+  userAnswers = [];
+  for (var i = 0; i < currentQuestions.length; i++) userAnswers.push(null);
+  errMain = 0;
+  errSpec = 0;
+
+  document.getElementById('modeBadge').textContent = 'Финальный тест — Экзамен';
+  document.getElementById('finalErrInfo').style.display = 'flex';
+  document.getElementById('eMain').textContent = '0';
+  document.getElementById('eSpec').textContent = '0';
+  go('screenQuiz');
+  renderQ();
+}
+
+function renderQ() {
+  var q = currentQuestions[currentIndex];
+  var total = currentQuestions.length;
+  var letters = ['A','B','C'];
+
+  document.getElementById('qNum').textContent = 'Вопрос ' + (currentIndex+1) + ' из ' + total;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('progressFill').style.width = (((currentIndex+1)/total)*100) + '%';
+  document.getElementById('hQ').textContent = 'Вопрос ' + (currentIndex+1) + '/' + total;
+  document.getElementById('hErr').textContent = 'Ошибок: ' + (errMain + errSpec);
+
+  var list = document.getElementById('answersList');
+  list.innerHTML = '';
+  var saved = userAnswers[currentIndex];
+
+  for (var i = 0; i < q.a.length; i++) {
+    var btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.innerHTML = '<span class="letter">' + letters[i] + '</span><span>' + q.a[i] + '</span>';
+    if (saved !== null) {
+      btn.disabled = true;
+      if (currentMode === 'block') {
+        if (i === q.c) btn.classList.add('correct');
+        if (i === saved && saved !== q.c) btn.classList.add('wrong');
+      } else {
+        if (i === saved) btn.classList.add('correct');
+      }
+    } else {
+      (function(idx) {
+        btn.onclick = function() { selectAns(idx); };
+      })(i);
+    }
+    list.appendChild(btn);
+  }
+
+  // Feedback
+  var fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  if (currentMode === 'block' && saved !== null) {
+    if (saved === q.c) {
+      fb.className = 'feedback show ok';
+      fb.textContent = '✅ Верно!';
+    } else {
+      fb.className = 'feedback show err';
+      fb.innerHTML = '❌ Неверно. Правильный ответ: <strong>' + letters[q.c] + '. ' + q.a[q.c] + '</strong>';
+    }
+  }
+
+  // Buttons
+  document.getElementById('prevBtn').style.display = currentIndex > 0 ? '' : 'none';
+  var nextBtn = document.getElementById('nextBtn');
+  nextBtn.textContent = currentIndex === total - 1 ? 'Завершить →' : 'Далее →';
+  nextBtn.disabled = (saved === null);
+}
+
+function selectAns(idx) {
+  if (userAnswers[currentIndex] !== null) return;
+  userAnswers[currentIndex] = idx;
+  var q = currentQuestions[currentIndex];
+  if (currentMode === 'final' && idx !== q.c) {
+    if (currentIndex < 20) { errMain++; document.getElementById('eMain').textContent = errMain; }
+    else { errSpec++; document.getElementById('eSpec').textContent = errSpec; }
+    document.getElementById('hErr').textContent = 'Ошибок: ' + (errMain + errSpec);
+  }
+  renderQ();
+}
+
+function nextQ() {
+  if (userAnswers[currentIndex] === null) return;
+  if (currentIndex < currentQuestions.length - 1) {
+    currentIndex++;
+    renderQ();
+  } else {
+    showResult();
+  }
+}
+
+function prevQ() {
+  if (currentIndex > 0) { currentIndex--; renderQ(); }
+}
+
+function exitQuiz() {
+  if (currentMode === 'block') go('screenBlocks');
+  else go('screenMode');
+}
+
+function showResult() {
+  var total = currentQuestions.length;
+  var correct = 0;
+  for (var i = 0; i < total; i++) {
+    if (userAnswers[i] === currentQuestions[i].c) correct++;
+  }
+  var wrong = total - correct;
+  var passed, icon, titleText;
+
+  if (currentMode === 'final') {
+    passed = (errMain < 5) && (errSpec < 6);
+    icon = passed ? '🏆' : '❌';
+    titleText = passed ? 'СДАЛ!' : 'НЕ СДАЛ';
+  } else {
+    passed = correct / total >= 0.7;
+    icon = passed ? '✅' : '📚';
+    titleText = passed ? 'ОТЛИЧНО!' : 'ПОПРОБУЙ ЕЩЁ';
+  }
+
+  document.getElementById('rIcon').textContent = icon;
+  var rt = document.getElementById('rTitle');
+  rt.textContent = titleText;
+  rt.className = 'result-title ' + (passed ? 'pass' : 'fail');
+  document.getElementById('rSub').textContent = 'Правильных ответов: ' + correct + ' из ' + total;
+
+  var stats = '<div class="rstat"><span class="rnum">' + correct + '</span><span class="rlbl">Верно</span></div>';
+  stats += '<div class="rstat"><span class="rnum" style="color:#e74c3c">' + wrong + '</span><span class="rlbl">Ошибок</span></div>';
+  stats += '<div class="rstat"><span class="rnum">' + Math.round(correct/total*100) + '%</span><span class="rlbl">Результат</span></div>';
+  if (currentMode === 'final') {
+    stats += '<div class="rstat"><span class="rnum" style="color:' + (errMain>=5?'#e74c3c':'#27ae60') + '">' + errMain + '/4</span><span class="rlbl">Осн. ошибок</span></div>';
+    stats += '<div class="rstat"><span class="rnum" style="color:' + (errSpec>=6?'#e74c3c':'#27ae60') + '">' + errSpec + '/5</span><span class="rlbl">Спец. ошибок</span></div>';
+  }
+  document.getElementById('rStats').innerHTML = stats;
+
+  var letters = ['A','B','C'];
+  var review = '';
+  for (var i = 0; i < total; i++) {
+    var q = currentQuestions[i];
+    if (userAnswers[i] !== q.c) {
+      review += '<div class="err-item">';
+      review += '<div class="eq">' + q.q + '</div>';
+      review += '<div class="your">✗ Ваш ответ: ' + letters[userAnswers[i]] + '. ' + q.a[userAnswers[i]] + '</div>';
+      review += '<div class="right">✓ Правильно: ' + letters[q.c] + '. ' + q.a[q.c] + '</div>';
+      review += '</div>';
+    }
+  }
+  if (review) review = '<h3>Работа над ошибками (' + wrong + ')</h3>' + review;
+  document.getElementById('errorsReview').innerHTML = review;
+
+  go('screenResult');
+}
+</script>
+</body>
+</html>
